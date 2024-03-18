@@ -1,34 +1,21 @@
-//acceder au fichier et lire
-//lire chaque ligne
-//tester sur le site
-//retourner la liste des chemins qui existent1
 const fs = require('fs');
-const readline = require('readline');
-const fetch = require('node-fetch');
-
 const cheminFichier = 'dir_list.txt';
 const baseurl = 'http://127.0.0.1:5000/';
-const tab = []
-// Une interface de lecture
-const lecteur = readline.createInterface({
-    input: fs.createReadStream(cheminFichier),
-    output: process.stdout,
-    terminal: false
-});
+//Lire les contenus du fichier et transformer en tableau 
+const listeMots = fs.readFileSync(cheminFichier, "utf8").toString().split("\n");
 
-// Fonction pour lire chaque ligne du fichier
-lecteur.on('line', async (ligne) => {
-    console.log(ligne);  
-            const response = await fetch(baseurl + ligne);
-            if(response.ok){
-                tab.push(ligne)
-            }
-              
-});
-console.log(tab);
-
-// Gérer les erreurs de lecture du fichier
-lecteur.on('error', (erreur) => {
-    console.error('Erreur lors de la lecture du fichier:', erreur);
-});
-
+const bruteForce = async () => {
+    const tab = []
+    //Teste chaque mot de la liste avec l'url de base avec fetch 
+    for(const elements of listeMots){
+        const response = await fetch(baseurl+elements)
+        console.log(`Tester : ${baseurl}${elements}`);
+        //Pour chaque element qui ne retourne pas du 404 , on le met dans un tableau qu'on vient de declarer juste en haut
+        if(response.status!=404){
+            tab.push(elements)
+        }
+    }
+    //Le resutat final
+    console.log("Les resultats : " + tab);
+}
+bruteForce();
